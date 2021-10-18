@@ -1,24 +1,28 @@
 
 dofile (reaper.GetResourcePath()..'/Scripts/MyScripts/UtilityFunctions.lua')
-is_new_value,filename,sectionID,cmdID,mode,resolution,val  = reaper.get_action_context()
-length = reaper.GetProjectLength()
+dofile (reaper.GetResourcePath()..'/Scripts/MyScripts/CursorScrollItemSnap.lua')
 
-state =getModifierState()
-
-pos = (length/127) * val
-
-if length == 0 then
-  pos = 30/127 * val
-end
-
-if(state == 1) then
-  beats = TimeToBeats(pos)
-  nearestBeatTime = reaper.TimeMap2_beatsToTime(0,beats)
-  reaper.SetEditCurPos(nearestBeatTime,true,false)
+--reaper.Undo_BeginBlock()
+if getModifierState() == 0 then
+  is_new_value,filename,sectionID,cmdID,mode,resolution,val  = reaper.get_action_context()
+  
+  pos = getCursorPosition(val,127,true)
+  snapEnabled = (reaper.SNM_GetIntConfigVar('projshowgrid', -666)&256 ==0)
+  
+  if(snapEnabled) then
+    beats = TimeToBeats(pos)
+    nearestBeatTime = reaper.TimeMap2_beatsToTime(0,beats)
+    setCursorPosition(nearestBeatTime,true)
+  else
+    setCursorPosition(pos,true)
+  end
+  selectCursorItemForSelectedTrack(pos)
 else
-  reaper.SetEditCurPos(pos,true,false)
+  itemSnap()
 end
+--reaper.Undo_EndBlock('bobby scrub',0)
+--reaper.CSurf_FlushUndo(
 
-
-
---reaper.ShowConsoleMsg(length)
+--reaper.Undo_OnStateChange("No Undo Point")
+--reaper.CSurf_FlushUndo(true);
+reaper.defer(function() end)
