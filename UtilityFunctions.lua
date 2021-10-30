@@ -1,7 +1,7 @@
 
 
 function TimeToBeats(time)
-  nearestBeat,measure = reaper.TimeMap2_timeToBeats(0,pos)
+  nearestBeat,measure = reaper.TimeMap2_timeToBeats(0,time)
   
   return math.floor(nearestBeat) + (measure * 4)
 end
@@ -75,5 +75,38 @@ function selectCursorItemForSelectedTrack(pos)
      item = reaper.GetMediaItem(0,i-1)
      reaper.SetMediaItemSelected(item,(item==selectedItem))
   end
-  
+end
+
+function snapToNearestBeat(pos)
+    local beats = TimeToBeats(pos)
+    local nearestBeatTime = reaper.TimeMap2_beatsToTime(0,beats)
+    setCursorPosition(nearestBeatTime,true)
+end
+
+function jogBars(dir)
+  is_new_value,filename,sectionID,cmdID,mode,resolution,val  = reaper.get_action_context()
+  local c = reaper.GetCursorPosition()
+  snapToNearestBeat(c)
+  c = reaper.GetCursorPosition()
+  local t = reaper.TimeMap2_beatsToTime(0,1) - reaper.TimeMap2_beatsToTime(0,0)
+  reaper.SetEditCurPos(c+t*dir,true,false)
+  --selectCursorItemForSelectedTrack(c+t)
+end
+
+function snapToNearestMeasure(dir)
+    local pos = reaper.GetCursorPosition()
+    nearestBeat,measure = reaper.TimeMap2_timeToBeats(0,pos)
+    local finalMeasure = measure
+    n = math.floor( nearestBeat + 0.5)
+    
+    f = measure + math.floor(nearestBeat/4.0)
+    if(dir ==1) then
+      f = measure + math.ceil(nearestBeat/4.0)
+    end
+    
+    if(n == 0) then
+      reaper.SetEditCurPos(reaper.TimeMap2_beatsToTime(0,(measure+dir)*4),true,false)
+    else
+      reaper.SetEditCurPos(reaper.TimeMap2_beatsToTime(0,f*4),true,false)
+    end
 end

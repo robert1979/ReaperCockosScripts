@@ -162,7 +162,7 @@ function Move(dir)
   mPos, mDist,selectedItem =  snapToItems(mPos,mDist,dir)
   reaper.SetEditCurPos(mPos,true,false)
   
-
+  reaper.SetCursorContext(1)
     itemCount = reaper.CountMediaItems(0)
     for i = 1,itemCount,1 do 
        item = reaper.GetMediaItem(0,i-1)

@@ -1,5 +1,6 @@
-
 dofile (reaper.GetResourcePath()..'/Scripts/MyScripts/SnapMove.lua')
-Move(-1)
-reaper.defer(function() end)
+function s()
+  Move(-1)
+end
+reaper.defer(s)
 
