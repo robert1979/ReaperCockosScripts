@@ -5,7 +5,7 @@ end
 
 function selectMove()
   
-  reaper.SetCursorContext(1)
+  reaper.SetCursorContext(1) -- FOCUS on arrange view
   local pos = reaper.GetCursorPosition()
   local itemCount = reaper.CountMediaItems(0)
   

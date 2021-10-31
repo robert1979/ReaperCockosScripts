@@ -4,6 +4,7 @@ end
 
 
 function splitGlue()
+  reaper.SetCursorContext(1)
   local pos = reaper.GetCursorPosition()
   
   selectedTrack = reaper.GetSelectedTrack(0, 0)
@@ -31,7 +32,7 @@ function splitGlue()
   end
   
   if splitTrack ~= null then
-    --reaper.Main_OnCommand(40012,0)
+    reaper.Main_OnCommand(40012,0)
     return
   end
   

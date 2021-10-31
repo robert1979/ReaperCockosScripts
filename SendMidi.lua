@@ -27,7 +27,7 @@ end
 local midichan = 1
 local mftbank = 1 -- Midifighter Twister Bank
 local vel = 45
-devnum = getDevice("MidiView")
+devnum = getDevice("Scarlett")
 
 msg(devnum)
 reaper.StuffMIDIMessage(devnum+16,
