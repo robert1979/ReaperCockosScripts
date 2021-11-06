@@ -46,7 +46,7 @@ local c =0
 local lastSelectedTrack = nil
 FXNAME = 'JS: Kemper Program Select'
 
-reaper.ShowMessageBox('Kemper midi track selection started','Action StartUp',0)
+--[[reaper.ShowMessageBox('Kemper midi track selection started','Action StartUp',0)
     
 function wait_for_playback()
 
@@ -68,6 +68,7 @@ function wait_for_playback()
       end
     end
   reaper.defer(wait_for_playback)
-end
+end]]--
 
-wait_for_playback()
+u = reaper.SNM_GetIntConfigVar("preroll", 0)&2
+msg(u)

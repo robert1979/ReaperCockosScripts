@@ -1,2 +1,2 @@
 dofile (reaper.GetResourcePath()..'/Scripts/MyScripts/ToggleTrackRecordArm.lua')
-armTrack(6)
+armTrack(7)
