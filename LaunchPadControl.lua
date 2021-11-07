@@ -200,11 +200,17 @@ function setupButtons()
   sendSys(flatten_array(setup_msg),device_id)
 end
 
-prev_s = {0,0,0,0,0,0,0,0}
+function math.Clamp(val, lower, upper)
+    assert(val and lower and upper, "not very useful error message here")
+    if lower > upper then lower, upper = upper, lower end -- swap if boundaries supplied the wrong way
+    return math.max(lower, math.min(upper, val))
+end
+
 
 function showTracks()
 
   local track_count = reaper.CountTracks(0)
+  
   if track_count == 0 then do return end end
   
   local msg_trks =get_empty_row(id_trk,8)
@@ -212,9 +218,22 @@ function showTracks()
   local msg_solo =get_empty_row(id_solo,8)
   local msg_mute =get_empty_row(id_mute,8)
   
+  local pages = 0
+  local cpage = 0
+  pages = math.ceil(track_count/8)
+  reaper.SetExtState('lp','pgs',pages,false)
   
-  for t =0,track_count-1,1 do
-    local track = reaper.GetTrack(0,t)
+  if reaper.HasExtState('lp','cpg')then
+    cpage =  reaper.GetExtState('lp','cpg')
+  end
+  
+  local plast_pg_trk_id = math.Clamp((track_count-1) - (cpage*8),-1,7) -- get last trk index for current page
+  
+  
+  for t =0,plast_pg_trk_id,1 do
+  
+    local trk_id =  t + (cpage*8)
+    local track = reaper.GetTrack(0,trk_id)
     local armed =reaper.GetMediaTrackInfo_Value(track,'I_RECARM')
     if t<#msg_armed then
     
@@ -233,9 +252,9 @@ function showTracks()
     
       local sel =reaper.GetMediaTrackInfo_Value(track,'I_SELECTED')
       if sel == 0 then
-        msg_trks[t+1] = {3,id_trk+t,mr*dim,mg*dim,mb*dim}
+        msg_trks[t+1] = {3,id_trk+t,mr,mg,mb}
       else
-        msg_trks[t+1] = {1,id_trk+t,3,0}
+        msg_trks[t+1] = {3,id_trk+t,mr*dim,mg*dim,mb*dim}
       end
       
       soloed =reaper.GetMediaTrackInfo_Value(track,'I_SOLO')
@@ -250,12 +269,11 @@ function showTracks()
       if armed == 1 then
         msg_armed[t+1] = {1,id_rec+t,5,0}
       end
-      
     end
   end
   
   local has_selected_media = reaper.GetSelectedMediaItem(0,0)~=nil
-  sys_msg ={}
+  local sys_msg ={}
   sys_msg[1] = sysl_head;
   sys_msg[2] = flatten_array(msg_armed)
   sys_msg[3] = flatten_array(msg_trks)
